@@ -1,5 +1,8 @@
-html, body {
+* {
   box-sizing: border-box;
+}
+
+html, body {
   margin: 0;
   padding: 0;
   min-height: 100%;
@@ -24,19 +27,25 @@ html, body {
   background-color: #fff5c3;
 }
 
-.half-column {
+.training-data, .test-data {
   height: 50%;
 }
 
+.scrollable-container {
+  position: relative;
+}
+
 .scrollable {
+  height: 100%;
+  width: 100%;
   position: relative;
   overflow: auto;
-  box-sizing: border-box;
-  padding-top: 25px;
+  padding: 25px 10px 10px;
 }
 
 h1 {
   position: absolute;
+  z-index: 20;
   top: 0;
   left: 0;
   width: 100%;
@@ -49,6 +58,7 @@ h1 {
 
 .header {
   position: absolute;
+  z-index: 20;
   top: 0;
   left: 0;
   width: 100%;
@@ -57,7 +67,7 @@ h1 {
 }
 
 .header h2 {
-  width: 70%;
+  width: 100%;
   margin: 0;
   display: inline-block;
   vertical-align: top;
@@ -74,7 +84,6 @@ h1 {
 }
 
 .control {
-  box-sizing: border-box;
   height: 24px;
   display: inline-block;
   background-color: #d3e397;
@@ -85,10 +94,113 @@ h1 {
   cursor: pointer;
 }
 
+.max-depth {
+  width: 3em;
+  font-size: 20px;
+  vertical-align: bottom;
+}
+
 .control.disabled {
   display: none;
 }
 
-.exposition {
+.controls {
+  height: 20%;
   padding-top: 40px;
+  text-align: center;
+}
+
+.attributes {
+  height: 80%;
+}
+
+.attribute {
+  margin-top: 10px;
+  background-color: #adddd1;
+  padding: 10px;
+}
+
+.ig {
+  float: right;
+  font-size: 20px;
+}
+
+.datum {
+  font-size: 10px;
+  margin-top: 10px;
+  background-color: #adddd1;
+  padding: 10px;
+}
+
+.tree-node {
+  padding-left: 20px;
+  position: relative;
+}
+
+.tree-node:before {
+  position: absolute;
+  top: 10px;
+  left: -11px;
+  height: 0;
+  width: 15px;
+  border-bottom: 1px solid #7c786a;
+  content: '';
+}
+
+.tree-node.root:before {
+  display: none;
+}
+
+.tree-node:after {
+  position: absolute;
+  left: 3px;
+  content: '+';
+  top: 4px;
+  border: 1px solid #7c786a;
+  border-radius: 15px;
+  height: 13px;
+  width: 13px;
+  line-height: 11px;
+  padding: 0 1px;
+  box-sizing: border-box;
+  background-color: #fff5c3;
+}
+
+.tree-node.closed:after {
+  line-height: 9px;
+  padding: 0 3px;
+  content: '-'
+}
+
+.tree-node.terminal:after {
+  content: '';
+}
+
+.tree-node-row {
+  height: 20px;
+  padding: 2px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+tree-node.terminal .tree-node-row {
+  cursor: inherit;
+}
+
+.tree-node-children {
+  position: relative;
+}
+
+.tree-node.closed .tree-node-children {
+  display: none;
+}
+
+.tree-node-children:before {
+  position: absolute;
+  left: -11px;
+  top: -9px;
+  content: '';
+  height: 100%;
+  width: 0;
+  border-left: 1px solid #7c786a;
 }

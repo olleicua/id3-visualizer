@@ -1,4 +1,4 @@
-DQ_ID3 = {}
+window.DQ_ID3 = {}
 
 # A decision tree node
 Node =
@@ -52,7 +52,7 @@ DQ_ID3.generate_tree = (data, attributes, target) ->
     root.attribute = _.max(attributes, (attr) -> DQ_ID3.IG(attr, data, target))
     root.children = {}
     for value in root.attribute.classes
-      subset = _.where(data, _.object(root.attribute.name, value))
+      subset = _.where(data, _.object([root.attribute.name], [value]))
 
       # no data match this value; create terminal node
       if subset.length is 0
@@ -67,8 +67,8 @@ DQ_ID3.generate_tree = (data, attributes, target) ->
 
       root.children[value] = child
 
-    # return root
-    root
+  # return root
+  root
 
 ###
 # H(Array<Object> data, Attribute target)
@@ -80,10 +80,11 @@ DQ_ID3.generate_tree = (data, attributes, target) ->
 ###
 DQ_ID3.H = (data, target) ->
   entropy = 0
-  counts = _.countBy(data, attribute.name)
+  counts = _.countBy(data, target.name)
   for value in target.classes
-    p = counts[value] / data.size
-    entropy -= p * Math.log2(p)
+    if _.isNumber counts[value]
+      p = counts[value] / data.length
+      entropy -= p * Math.log2(p)
   entropy
 
 ###
@@ -103,8 +104,9 @@ DQ_ID3.IG = (attribute, data, target) ->
   # calculate entropy after split
   splitEntropy = 0
   for value in attribute.classes
-    subset = _.where(data, _.object(attribute.name, value))
-    splitEntropy += DQ_ID3.H(subset, target) * subset.length / data.length
+    subset = _.where(data, _.object([attribute.name], [value]))
+    unless _.isEmpty subset
+      splitEntropy += DQ_ID3.H(subset, target) * subset.length / data.length
 
   # return information gain
   originalEntropy - splitEntropy

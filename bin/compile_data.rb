@@ -4,15 +4,17 @@ def range_to_string(range)
 end
 
 def raw_from_file(file)
-  open(file, 'r').map { |line| line.split(',').map(&:strip) }
+  open(file, 'r').map do |line|
+    unless /Cross validator/ =~ line
+      line.split(',').map(&:strip)
+    end
+  end.compact
 end
 
 def classes_for(raw_data, index)
-  data = raw_data\
-         .reject { |d| d[index] == '?' }\
-         .map { |d| d[index].to_i }
+  data = raw_data.reject { |d| d[index] == '?' }.map { |d| d[index].to_i }
   min = data.min
-  max = data.min
+  max = data.max
   mid = min + ((max - min) / 2)
   [min .. mid, (mid + 1) .. max]
 end
@@ -28,7 +30,7 @@ def prepare_data(attributes, raw_data)
         end || attribute[:classes].last
         val = range_to_string range
       end
-      d[attribute[:name]] = val
+      d[attribute[:name]] = val.sub /\./, ''
     end
     d
   end
@@ -48,8 +50,8 @@ def prepare_attributes(attributes)
   end
 end
 
-training_raw =  raw_from_file 'app/data/adult.test.txt'
-test_raw =  raw_from_file 'app/data/adult.data.txt'
+training_raw = raw_from_file('app/data/adult.test.txt').first(100)
+test_raw = raw_from_file('app/data/adult.data.txt').first(300)
 all_raw = training_raw + test_raw
 
 attributes = [
@@ -97,13 +99,14 @@ attributes = [
     classes: %w[ United-States Cambodia England Puerto-Rico Canada Germany Outlying-US(Guam-USVI-etc) India Japan Greece South China Cuba Iran Honduras Philippines Italy Poland Jamaica Vietnam Mexico Portugal Ireland France Dominican-Republic Laos Ecuador Taiwan Haiti Columbia Hungary Guatemala Nicaragua Scotland Thailand Yugoslavia El-Salvador Trinadad&Tobago Peru Hong Holand-Netherlands ]
   }, {
     name: 'income',
-    classes: %w[ <=50K >50K ]
+    classes: %w[ <=50K >50K ],
+    target: true
   }
 ]
 
 data = {
-  training_data: prepare_data(attributes, training_raw),
-  test_data: prepare_data(attributes, test_raw),
+  trainingData: prepare_data(attributes, training_raw),
+  testData: prepare_data(attributes, test_raw),
   attributes: prepare_attributes(attributes)
 }
 

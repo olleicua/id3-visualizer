@@ -11,34 +11,42 @@
   <body>
 
     <div class="info column">
-      <div class="exposition half-column scrollable">
+      <div class="controls scrollable-container">
         <div class="header">
           <h2>ID3 Visualizer</h2>
-          <div class="controls">
-            <div class="control restart">Start</div>
-            <div class="control next disabled">Next</div>
-          </div>
         </div>
+        <p>
+          <label>
+            Maximum Depth
+            <input type="number" class="max-depth" value="10" />
+          </label>
+          <br />
+          <div class="control rebuild-tree">Rebuild Tree</div>
+        </p>
       </div>
-      <div class="attributes half-column scrollable">
+      <div class="attributes scrollable-container">
         <h1>Attributes</h1>
+        <div class="scrollable"></div>
       </div>
 
-    </div><div class="tree column scrollable">
+    </div><div class="tree column scrollable-container">
       <h1>Tree</h1>
+      <div class="scrollable"></div>
 
     </div><div class="data column">
-      <div class="training-data half-column scrollable">
+      <div class="training-data scrollable-container">
         <h1>Training Data</h1>
-        <ul></ul>
+        <div class="scrollable"></div>
       </div>
-      <div class="test-data half-column scrollable">
+      <div class="test-data scrollable-container">
         <h1>Test Data</h1>
-        <ul></ul>
+        <div class="scrollable"></div>
       </div>
     </div>
 
+    <script type="text/javascript" src="scripts/underscore.js"></script>
     <script type="text/javascript" src="scripts/jquery.js"></script>
+    <script type="text/javascript" src="data/adult.data.js"></script>
     <script type="text/javascript" src="scripts/id3.js"></script>
     <script type="text/javascript" src="scripts/main.js"></script>
   </body>
