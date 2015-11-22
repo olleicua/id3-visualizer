@@ -11,9 +11,22 @@
       this.displayAttributes();
       this.displayData('.training-data', this.trainingData);
       this.displayData('.test-data', this.testData);
-      return $('.rebuild-tree').click((function(_this) {
+      $('.rebuild-tree').click((function(_this) {
         return function() {
           return _this.rebuildTree();
+        };
+      })(this));
+      $('.run-tests').click((function(_this) {
+        return function() {
+          return _this.runTests();
+        };
+      })(this));
+      return _.each(this.testData, (function(_this) {
+        return function(datum) {
+          datum.elem.addClass('clickable');
+          return datum.elem.click(function() {
+            return _this.showTest(datum);
+          });
         };
       })(this));
     },
@@ -44,20 +57,23 @@
       return datum.elem;
     },
     rebuildTree: function() {
-      var attributes, target;
+      var attributes, maxDepth;
+      maxDepth = parseFloat($('.max-depth').val());
       attributes = _.reject(this.attributes, {
         target: true
       });
-      target = _.findWhere(this.attributes, {
+      this.target = _.findWhere(this.attributes, {
         target: true
       });
-      this.tree = DQ_ID3.generate_tree(this.trainingData, attributes, target);
+      this.tree = DQ_ID3.generate_tree(this.trainingData, attributes, this.target, maxDepth);
       window.tree = this.tree;
       window.data = this.testData;
+      this.resetTests();
       return this.displayTree();
     },
     displayTree: function() {
       var root;
+      $('.tree .scrollable').empty();
       root = this.buildTree(this.tree, 'root').removeClass('closed').addClass('root');
       return $('.tree .scrollable').append(root);
     },
@@ -88,6 +104,50 @@
         })(this));
       }
       return node.elem;
+    },
+    resetTests: function() {
+      $('.datum').removeClass('correct incorrect');
+      return $('.tree-node-row').removeClass('correct incorrect');
+    },
+    runTests: function() {
+      if (!this.tree) {
+        return;
+      }
+      this.resetTests();
+      return _.each(this.testData, (function(_this) {
+        return function(datum) {
+          return _this.runTest(datum);
+        };
+      })(this));
+    },
+    runTest: function(datum) {
+      var klass, result, resultBox;
+      if (!this.tree) {
+        return;
+      }
+      result = this.tree.decide(datum);
+      resultBox = $('<div>').addClass('result-box').append(result);
+      datum.elem.prepend(resultBox);
+      klass = result === datum[this.target.name] ? 'correct' : 'incorrect';
+      datum.elem.addClass(klass);
+      return klass;
+    },
+    showTest: function(datum) {
+      var klass;
+      if (!this.tree) {
+        return;
+      }
+      $('.tree-node-row').removeClass('correct incorrect');
+      $('.tree-node').addClass('closed');
+      klass = this.runTest(datum);
+      return this.tree.decide(datum, (function(_this) {
+        return function(node) {
+          node.elem.find('> .tree-node-row').addClass(klass);
+          if (!node.terminal) {
+            return node.elem.removeClass('closed');
+          }
+        };
+      })(this));
     }
   };
 

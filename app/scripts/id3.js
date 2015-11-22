@@ -12,11 +12,16 @@
         return "Decision on " + this.label;
       }
     },
-    decide: function(datum) {
+    decide: function(datum, callback) {
+      if (typeof callback === "function") {
+        callback(this);
+      }
       if (this.terminal) {
         return this.label;
+      } else if (datum[this.attribute.name] !== '?') {
+        return this.children[datum[this.attribute.name]].decide(datum, callback);
       } else {
-        return this.children[datum[this.attribute.name]].decide(datum);
+        return '?';
       }
     }
   };
@@ -40,14 +45,14 @@
    * returns the root node of a decision tree for the target attribute
    */
 
-  DQ_ID3.generate_tree = function(data, attributes, target) {
+  DQ_ID3.generate_tree = function(data, attributes, target, maxDepth) {
     var child, i, len, ref, root, subset, uniqueLabels, unusedAttributes, value;
     root = Object.create(Node);
     uniqueLabels = _.uniq(_.pluck(data, target.name));
     if (uniqueLabels.length === 1) {
       root.terminal = true;
       root.label = uniqueLabels[0];
-    } else if (attributes.length === 0) {
+    } else if (attributes.length === 0 || maxDepth === 0) {
       root.terminal = true;
       root.label = mostCommon(data, target.name);
     } else {
@@ -67,7 +72,7 @@
           unusedAttributes = _.reject(attributes, {
             name: root.attribute.name
           });
-          child = DQ_ID3.generate_tree(subset, unusedAttributes, target);
+          child = DQ_ID3.generate_tree(subset, unusedAttributes, target, maxDepth - 1);
         }
         root.children[value] = child;
       }

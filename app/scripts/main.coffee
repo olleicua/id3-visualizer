@@ -14,6 +14,10 @@ DQ_ID3_Visualizer =
 
     # event hooks
     $('.rebuild-tree').click => @rebuildTree()
+    $('.run-tests').click => @runTests()
+    _.each @testData, (datum) =>
+      datum.elem.addClass 'clickable'
+      datum.elem.click => @showTest(datum)
 
   # generate the DOM for the attributes section
   displayAttributes: ->
@@ -44,19 +48,22 @@ DQ_ID3_Visualizer =
 
   rebuildTree: ->
     # generate tree
+    maxDepth = parseFloat $('.max-depth').val()
     attributes = _.reject @attributes, target: true
-    target = _.findWhere @attributes, target: true
-    @tree = DQ_ID3.generate_tree(@trainingData, attributes, target)
+    @target = _.findWhere @attributes, target: true
+    @tree = DQ_ID3.generate_tree(@trainingData, attributes, @target, maxDepth)
 
     # expose to console
     window.tree = @tree
     window.data = @testData
 
     # genderate DOM for the tree
+    @resetTests()
     @displayTree()
 
   # generate the DOM for the tree
   displayTree: ->
+    $('.tree .scrollable').empty()
     root = @buildTree(@tree, 'root')
       .removeClass('closed')
       .addClass('root')
@@ -79,5 +86,41 @@ DQ_ID3_Visualizer =
       _.each _.pairs(node.children), ([value, childNode]) =>
         children.append @buildTree(childNode, value)
     node.elem
+
+  # reset all of the data rows to blue
+  resetTests: ->
+    $('.datum').removeClass('correct incorrect')
+    $('.tree-node-row').removeClass('correct incorrect')
+
+  # test each row of the test data set on the tree
+  runTests: ->
+    return unless @tree
+
+    @resetTests()
+    _.each @testData, (datum) => @runTest(datum)
+
+  # test a row of the test data set on the tree
+  runTest: (datum) ->
+    return unless @tree
+
+    result = @tree.decide(datum)
+    resultBox = $('<div>')
+      .addClass 'result-box'
+      .append result
+    datum.elem.prepend resultBox
+    klass = if result is datum[@target.name] then 'correct' else 'incorrect'
+    datum.elem.addClass klass
+    klass
+
+  # display the path through the tree of a specific datum
+  showTest: (datum) ->
+    return unless @tree
+
+    $('.tree-node-row').removeClass('correct incorrect')
+    $('.tree-node').addClass('closed')
+    klass = @runTest(datum)
+    @tree.decide datum, (node) =>
+      node.elem.find('> .tree-node-row').addClass(klass)
+      node.elem.removeClass('closed') unless node.terminal
 
 DQ_ID3_Visualizer.init()

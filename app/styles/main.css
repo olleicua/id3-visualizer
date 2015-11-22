@@ -132,6 +132,21 @@ h1 {
   padding: 10px;
 }
 
+.correct {
+  background-color: #d3e397;
+}
+
+.incorrect {
+  background-color: #eb6e44;
+}
+
+.datum .result-box {
+  float: right;
+  border: 1px solid #7c786a;
+  margin: 6px;
+  padding: 6px;
+}
+
 .tree-node {
   padding-left: 20px;
   position: relative;
@@ -183,7 +198,7 @@ h1 {
   cursor: pointer;
 }
 
-tree-node.terminal .tree-node-row {
+.tree-node.terminal .tree-node-row {
   cursor: inherit;
 }
 
@@ -203,4 +218,8 @@ tree-node.terminal .tree-node-row {
   height: 100%;
   width: 0;
   border-left: 1px solid #7c786a;
+}
+
+.clickable {
+  cursor: pointer;
 }

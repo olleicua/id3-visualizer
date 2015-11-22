@@ -11,11 +11,14 @@ Node =
       "Decision on #{@label}"
 
   # decide which label the datum belongs to
-  decide: (datum) ->
+  decide: (datum, callback) ->
+    callback?(@)
     if @terminal
       @label
+    else if datum[@attribute.name] isnt '?'
+      @children[datum[@attribute.name]].decide(datum, callback)
     else
-      @children[datum[@attribute.name]].decide(datum)
+      '?'
 
 ###
 # mostCommon(Array<Object> data, String attribute)
@@ -31,7 +34,7 @@ mostCommon = (data, attribute) ->
 # runs the ID3 algorithm and
 # returns the root node of a decision tree for the target attribute
 ###
-DQ_ID3.generate_tree = (data, attributes, target) ->
+DQ_ID3.generate_tree = (data, attributes, target, maxDepth) ->
   root = Object.create Node
 
   # check if all examples have the same label
@@ -41,7 +44,7 @@ DQ_ID3.generate_tree = (data, attributes, target) ->
     root.label = uniqueLabels[0]
 
   # check if there are no attributes left to decide on
-  else if attributes.length is 0
+  else if attributes.length is 0 or maxDepth is 0
     root.terminal = true
     root.label = mostCommon(data, target.name)
 
@@ -63,7 +66,10 @@ DQ_ID3.generate_tree = (data, attributes, target) ->
       # run ID3 recursively on the subset
       else
         unusedAttributes = _.reject(attributes, name: root.attribute.name)
-        child = DQ_ID3.generate_tree(subset, unusedAttributes, target)
+        child = DQ_ID3.generate_tree(subset,
+                                     unusedAttributes,
+                                     target,
+                                     maxDepth - 1)
 
       root.children[value] = child
 
