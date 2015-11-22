@@ -211,10 +211,6 @@ h1 {
   content: '';
 }
 
-/* .tree-node-row-container { */
-
-/* } */
-
 .tree-node-row {
   height: 20px;
   text-overflow: ellipsis;

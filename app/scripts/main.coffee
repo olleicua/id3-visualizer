@@ -93,8 +93,15 @@ DQ_ID3_Visualizer =
 
   # display info gain on attributes
   showIG: (igData, domNode) ->
-    @resetTests()
+
+    # show selection in tree
+    @resetTree()
     domNode.addClass 'correct'
+    domNode.removeClass 'closed'
+    domNode.parents('.tree-node').removeClass 'closed'
+
+    # show selected IG
+    @resetAttributes()
     _.each @attributes, (attribute) ->
       if _.isNumber igData[attribute.name]
         attribute.elem.addClass 'correct'
@@ -104,10 +111,24 @@ DQ_ID3_Visualizer =
 
   # reset all of the data rows to blue
   resetTests: ->
+    @resetData()
+    @resetTree()
+    @resetAttributes()
+
+  # reset all of the data rows to blue
+  resetData: ->
     $('.datum').removeClass('correct incorrect')
-    $('.tree-node-row').removeClass('correct incorrect')
-    $('.attribute').removeClass('correct incorrect')
     $('.datum .result-box').remove()
+
+  # close and reset the tree
+  resetTree: ->
+    $('.tree-node').addClass('closed')
+    $('.tree-node.root').removeClass('closed')
+    $('.tree-node-row').removeClass('correct incorrect')
+
+  # reset all of the attribute rows to blue
+  resetAttributes: ->
+    $('.attribute').removeClass('correct incorrect')
     $('.attribute .ig').remove()
 
   # test each row of the test data set on the tree
@@ -135,10 +156,8 @@ DQ_ID3_Visualizer =
   showTest: (datum) ->
     return unless @tree
 
-    $('.attribute .ig').remove()
-    $('.tree-node-row').removeClass('correct incorrect')
-    $('.attribute').removeClass('correct incorrect')
-    $('.tree-node').addClass('closed')
+    @resetAttributes()
+    @resetTree()
     klass = @runTest(datum)
     @tree.decide datum, (node) =>
       node.elem.find('> .tree-node-row').addClass(klass)

@@ -114,8 +114,11 @@
       return node.elem;
     },
     showIG: function(igData, domNode) {
-      this.resetTests();
+      this.resetTree();
       domNode.addClass('correct');
+      domNode.removeClass('closed');
+      domNode.parents('.tree-node').removeClass('closed');
+      this.resetAttributes();
       return _.each(this.attributes, function(attribute) {
         var ig, igBox;
         if (_.isNumber(igData[attribute.name])) {
@@ -127,10 +130,21 @@
       });
     },
     resetTests: function() {
+      this.resetData();
+      this.resetTree();
+      return this.resetAttributes();
+    },
+    resetData: function() {
       $('.datum').removeClass('correct incorrect');
-      $('.tree-node-row').removeClass('correct incorrect');
+      return $('.datum .result-box').remove();
+    },
+    resetTree: function() {
+      $('.tree-node').addClass('closed');
+      $('.tree-node.root').removeClass('closed');
+      return $('.tree-node-row').removeClass('correct incorrect');
+    },
+    resetAttributes: function() {
       $('.attribute').removeClass('correct incorrect');
-      $('.datum .result-box').remove();
       return $('.attribute .ig').remove();
     },
     runTests: function() {
@@ -162,10 +176,8 @@
       if (!this.tree) {
         return;
       }
-      $('.attribute .ig').remove();
-      $('.tree-node-row').removeClass('correct incorrect');
-      $('.attribute').removeClass('correct incorrect');
-      $('.tree-node').addClass('closed');
+      this.resetAttributes();
+      this.resetTree();
       klass = this.runTest(datum);
       return this.tree.decide(datum, (function(_this) {
         return function(node) {
