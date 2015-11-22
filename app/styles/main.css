@@ -120,6 +120,10 @@ h1 {
   padding: 10px;
 }
 
+.attribute.correct {
+  min-height: 57px;
+}
+
 .ig {
   float: right;
   font-size: 20px;
@@ -140,16 +144,21 @@ h1 {
   background-color: #eb6e44;
 }
 
-.datum .result-box {
+.datum .result-box, .attribute .ig {
   float: right;
   border: 1px solid #7c786a;
   margin: 6px;
   padding: 6px;
 }
 
+.attribute .ig {
+  margin: 0;
+}
+
 .tree-node {
   padding-left: 20px;
   position: relative;
+  white-space: nowrap;
 }
 
 .tree-node:before {
@@ -166,10 +175,9 @@ h1 {
   display: none;
 }
 
-.tree-node:after {
+.tree-node .toggle {
   position: absolute;
   left: 3px;
-  content: '+';
   top: 4px;
   border: 1px solid #7c786a;
   border-radius: 15px;
@@ -179,22 +187,39 @@ h1 {
   padding: 0 1px;
   box-sizing: border-box;
   background-color: #fff5c3;
+  cursor: pointer;
 }
 
-.tree-node.closed:after {
+.tree-node .toggle:after {
+  content: '+';
+}
+
+.tree-node.closed .toggle {
   line-height: 9px;
   padding: 0 3px;
+}
+
+.tree-node.closed .toggle:after {
   content: '-'
 }
 
-.tree-node.terminal:after {
+.tree-node.terminal .toggle {
+  cursor: initial;
+}
+
+.tree-node.terminal .toggle:after {
   content: '';
 }
 
+/* .tree-node-row-container { */
+
+/* } */
+
 .tree-node-row {
   height: 20px;
-  padding: 2px;
+  text-overflow: ellipsis;
   overflow: hidden;
+  padding: 2px;
   cursor: pointer;
 }
 

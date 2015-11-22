@@ -38,7 +38,7 @@
       })(this));
     },
     buildAttribute: function(attribute) {
-      return attribute.elem = $('<div>').addClass('attribute').append($('<div>').addClass('ig')).append($('<b>').text(attribute.name)).append(" (" + (attribute.classes.join(', ')) + ")");
+      return attribute.elem = $('<div>').addClass('attribute').append($('<b>').text(attribute.name)).append(" (" + (attribute.classes.join(', ')) + ")");
     },
     displayData: function(selector, data) {
       return _.each(data, (function(_this) {
@@ -78,8 +78,10 @@
       return $('.tree .scrollable').append(root);
     },
     buildTree: function(node, value) {
-      var children, row;
+      var children, row, toggle;
       node.elem = $('<div>').addClass('tree-node closed');
+      toggle = $('<div>').addClass('toggle');
+      node.elem.append(toggle);
       row = $('<div>').addClass('tree-node-row');
       node.elem.append(row);
       if (value) {
@@ -89,9 +91,15 @@
         node.elem.addClass('terminal');
         row.append(": " + node.label);
       } else {
-        row.click(function() {
+        toggle.click(function() {
           return node.elem.toggleClass('closed');
         });
+        row.click((function(_this) {
+          return function() {
+            node.elem.removeClass('closed');
+            return _this.showIG(node.igData, row);
+          };
+        })(this));
         row.append(": split on " + node.attribute.name);
         children = $('<div>').addClass('tree-node-children');
         node.elem.append(children);
@@ -105,9 +113,25 @@
       }
       return node.elem;
     },
+    showIG: function(igData, domNode) {
+      this.resetTests();
+      domNode.addClass('correct');
+      return _.each(this.attributes, function(attribute) {
+        var ig, igBox;
+        if (_.isNumber(igData[attribute.name])) {
+          attribute.elem.addClass('correct');
+          ig = Math.round(igData[attribute.name] * 100) / 100;
+          igBox = $('<div>').addClass('ig').text(ig);
+          return attribute.elem.prepend(igBox);
+        }
+      });
+    },
     resetTests: function() {
       $('.datum').removeClass('correct incorrect');
-      return $('.tree-node-row').removeClass('correct incorrect');
+      $('.tree-node-row').removeClass('correct incorrect');
+      $('.attribute').removeClass('correct incorrect');
+      $('.datum .result-box').remove();
+      return $('.attribute .ig').remove();
     },
     runTests: function() {
       if (!this.tree) {
@@ -138,7 +162,9 @@
       if (!this.tree) {
         return;
       }
+      $('.attribute .ig').remove();
       $('.tree-node-row').removeClass('correct incorrect');
+      $('.attribute').removeClass('correct incorrect');
       $('.tree-node').addClass('closed');
       klass = this.runTest(datum);
       return this.tree.decide(datum, (function(_this) {

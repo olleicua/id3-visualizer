@@ -59,6 +59,9 @@
       root.attribute = _.max(attributes, function(attr) {
         return DQ_ID3.IG(attr, data, target);
       });
+      root.igData = _.object(_.pluck(attributes, 'name'), _.map(attributes, function(attr) {
+        return DQ_ID3.IG(attr, data, target);
+      }));
       root.children = {};
       ref = root.attribute.classes;
       for (i = 0, len = ref.length; i < len; i++) {

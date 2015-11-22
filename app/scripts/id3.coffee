@@ -53,6 +53,9 @@ DQ_ID3.generate_tree = (data, attributes, target, maxDepth) ->
 
     # choose the attribute
     root.attribute = _.max(attributes, (attr) -> DQ_ID3.IG(attr, data, target))
+    root.igData = _.object(_.pluck(attributes, 'name'),
+                           _.map(attributes,
+                                 (attr) -> DQ_ID3.IG(attr, data, target)))
     root.children = {}
     for value in root.attribute.classes
       subset = _.where(data, _.object([root.attribute.name], [value]))

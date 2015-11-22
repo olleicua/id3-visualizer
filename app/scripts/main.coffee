@@ -28,7 +28,6 @@ DQ_ID3_Visualizer =
   buildAttribute: (attribute) ->
     attribute.elem = $('<div>')
       .addClass 'attribute'
-      .append $('<div>').addClass 'ig'
       .append $('<b>').text attribute.name
       .append " (#{attribute.classes.join(', ')})"
 
@@ -72,6 +71,8 @@ DQ_ID3_Visualizer =
   # generate the DOM for a level of the tree
   buildTree: (node, value) ->
     node.elem = $('<div>').addClass 'tree-node closed'
+    toggle = $('<div>').addClass 'toggle'
+    node.elem.append toggle
     row = $('<div>').addClass 'tree-node-row'
     node.elem.append row
     row.append $('<b>').text value if value
@@ -79,7 +80,10 @@ DQ_ID3_Visualizer =
       node.elem.addClass 'terminal'
       row.append ": #{node.label}"
     else
-      row.click -> node.elem.toggleClass 'closed'
+      toggle.click -> node.elem.toggleClass 'closed'
+      row.click =>
+        node.elem.removeClass 'closed'
+        @showIG(node.igData, row)
       row.append ": split on #{node.attribute.name}"
       children = $('<div>').addClass 'tree-node-children'
       node.elem.append children
@@ -87,10 +91,24 @@ DQ_ID3_Visualizer =
         children.append @buildTree(childNode, value)
     node.elem
 
+  # display info gain on attributes
+  showIG: (igData, domNode) ->
+    @resetTests()
+    domNode.addClass 'correct'
+    _.each @attributes, (attribute) ->
+      if _.isNumber igData[attribute.name]
+        attribute.elem.addClass 'correct'
+        ig = Math.round(igData[attribute.name] * 100) / 100
+        igBox = $('<div>').addClass('ig').text(ig)
+        attribute.elem.prepend igBox
+
   # reset all of the data rows to blue
   resetTests: ->
     $('.datum').removeClass('correct incorrect')
     $('.tree-node-row').removeClass('correct incorrect')
+    $('.attribute').removeClass('correct incorrect')
+    $('.datum .result-box').remove()
+    $('.attribute .ig').remove()
 
   # test each row of the test data set on the tree
   runTests: ->
@@ -117,7 +135,9 @@ DQ_ID3_Visualizer =
   showTest: (datum) ->
     return unless @tree
 
+    $('.attribute .ig').remove()
     $('.tree-node-row').removeClass('correct incorrect')
+    $('.attribute').removeClass('correct incorrect')
     $('.tree-node').addClass('closed')
     klass = @runTest(datum)
     @tree.decide datum, (node) =>
