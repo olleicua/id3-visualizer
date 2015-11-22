@@ -26,7 +26,7 @@ def prepare_data(attributes, raw_data)
       val = raw_d[index]
       if attribute[:classes][0].is_a? Range
         range = attribute[:classes].detect do |klass|
-          klass.include? val
+          klass.include? val.to_i
         end || attribute[:classes].last
         val = range_to_string range
       end
