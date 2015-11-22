@@ -126,6 +126,7 @@
         return;
       }
       result = this.tree.decide(datum);
+      datum.elem.find('.result-box').remove();
       resultBox = $('<div>').addClass('result-box').append(result);
       datum.elem.prepend(resultBox);
       klass = result === datum[this.target.name] ? 'correct' : 'incorrect';

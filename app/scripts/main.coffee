@@ -104,6 +104,7 @@ DQ_ID3_Visualizer =
     return unless @tree
 
     result = @tree.decide(datum)
+    datum.elem.find('.result-box').remove()
     resultBox = $('<div>')
       .addClass 'result-box'
       .append result
