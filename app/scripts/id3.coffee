@@ -108,5 +108,3 @@ DQ_ID3.IG = (attribute, data, target) ->
 
   # return information gain
   originalEntropy - splitEntropy
-
-module.exports = DQ_ID3
